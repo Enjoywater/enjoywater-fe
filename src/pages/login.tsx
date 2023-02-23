@@ -1,11 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import Link from 'next/link';
 import styled, { css } from 'styled-components';
+import { useRouter } from 'next/router';
 
-import { checkUserId, checkPassword } from '../utilities';
+import { signIn } from 'next-auth/react';
+import { checkUserId, checkPassword } from 'utilities';
 import type { NextPage } from 'next';
 
 const LoginPage: NextPage = () => {
+  const router = useRouter();
+
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState({
@@ -37,6 +40,20 @@ const LoginPage: NextPage = () => {
     return setLoginError((prev) => ({ ...prev, passwordError: !checkPassword(password) }));
   };
 
+  const handleSubmit = async () => {
+    try {
+      await signIn('credentials', {
+        username: userId,
+        password,
+        redirect: false,
+      });
+
+      router.push('/');
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     if (checkUserId(userId)) setLoginError((prev) => ({ ...prev, idError: false }));
   }, [userId]);
@@ -46,61 +63,42 @@ const LoginPage: NextPage = () => {
   }, [password]);
 
   return (
-    <>
-      <Header>
-        <Link href='/'>
-          <Title>HAUS</Title>
-        </Link>
-        <Link href='/login'>
-          <p>login</p>
-        </Link>
-      </Header>
-      <Form>
-        <InputTitle>아이디</InputTitle>
-        <TextInput isError={idError}>
-          <input
-            maxLength={30}
-            type='text'
-            onBlur={() => handleFocusOut('userId')}
-            onChange={(e) => handleIdInput(e)}
-          />
-        </TextInput>
-        {idError && (
-          <ErrorMsg>
-            <p>올바른 아이디 형식으로 입력해주세요.</p>
-          </ErrorMsg>
-        )}
-        <InputTitle>비밀번호</InputTitle>
-        <TextInput isError={passwordError}>
-          <input
-            maxLength={30}
-            type='password'
-            onBlur={() => handleFocusOut('password')}
-            onChange={(e) => handlePasswordInput(e)}
-          />
-        </TextInput>
-        {passwordError && (
-          <ErrorMsg isPassword>
-            <p>올바른 비밀번호 형식으로 입력해주세요.</p>
-          </ErrorMsg>
-        )}
-        <LoginButton disabled={buttonStatus}>로그인</LoginButton>
-      </Form>
-    </>
+    <Form>
+      <InputTitle>아이디</InputTitle>
+      <TextInput isError={idError}>
+        <input
+          maxLength={30}
+          type='text'
+          onBlur={() => handleFocusOut('userId')}
+          onChange={(e) => handleIdInput(e)}
+        />
+      </TextInput>
+      {idError && (
+        <ErrorMsg>
+          <p>올바른 아이디 형식으로 입력해주세요.</p>
+        </ErrorMsg>
+      )}
+      <InputTitle>비밀번호</InputTitle>
+      <TextInput isError={passwordError}>
+        <input
+          maxLength={30}
+          type='password'
+          onBlur={() => handleFocusOut('password')}
+          onChange={(e) => handlePasswordInput(e)}
+        />
+      </TextInput>
+      {passwordError && (
+        <ErrorMsg isPassword>
+          <p>올바른 비밀번호 형식으로 입력해주세요.</p>
+        </ErrorMsg>
+      )}
+      <LoginButton disabled={buttonStatus} onClick={handleSubmit}>
+        로그인
+      </LoginButton>
+    </Form>
   );
 };
 export default LoginPage;
-
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px;
-`;
-
-const Title = styled.a`
-  font-size: 48px;
-`;
 
 const Form = styled.div`
   display: flex;
