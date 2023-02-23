@@ -1,20 +1,25 @@
 import type { AppProps } from 'next/app';
 import styled from 'styled-components';
+import { SessionProvider } from 'next-auth/react';
 
-import setupMSW from '../api/setup';
-import GlobalStyle from '../styles/GlobalStyle';
+import Layout from 'components/Layout';
+import GlobalStyle from 'styles/GlobalStyle';
+
+import setupMSW from 'api/setup';
 
 setupMSW();
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <>
+    <SessionProvider session={pageProps.session}>
       <GlobalStyle />
       <Background />
       <Content>
-        <Component {...pageProps} />
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
       </Content>
-    </>
+    </SessionProvider>
   );
 }
 
