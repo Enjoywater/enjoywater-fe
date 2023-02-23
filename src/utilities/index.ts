@@ -11,3 +11,13 @@ export const parseQueryString = (search: string): Record<string, string> =>
 
       return acc;
     }, {} as Record<string, string>);
+
+export const checkUserId = (id: string) => {
+  const idCheck = /^[A-Za-z0-9]{5,30}$/;
+  return idCheck.test(id);
+};
+
+export const checkPassword = (password: string) => {
+  const passwordCheck = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,30}/;
+  return passwordCheck.test(password);
+};
