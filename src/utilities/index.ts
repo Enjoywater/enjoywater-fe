@@ -21,3 +21,20 @@ export const checkPassword = (password: string) => {
   const passwordCheck = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,30}/;
   return passwordCheck.test(password);
 };
+
+export const formatPageArray = (totalCount: number) => {
+  const pageNumbers = [];
+  const totalPage = Math.ceil(totalCount / 10);
+
+  for (let i = 1; i <= totalPage; i += 5) {
+    const pageGroup = [];
+
+    for (let j = i; j < i + 5 && j <= totalPage; j++) {
+      pageGroup.push(j);
+    }
+
+    pageNumbers.push(pageGroup);
+  }
+
+  return pageNumbers;
+};
