@@ -1,10 +1,15 @@
 import React from 'react';
-import Link from 'next/link';
 import styled from 'styled-components';
+
+import Link from 'next/link';
 
 import { signOut, useSession } from 'next-auth/react';
 
-function Layout({ children }: { children: React.ReactNode }) {
+type LayoutProps = {
+  children: React.ReactNode;
+};
+
+function Layout({ children }: LayoutProps) {
   const { data } = useSession();
 
   return (
@@ -46,4 +51,5 @@ const Header = styled.div`
 
 const Title = styled.p`
   font-size: 48px;
+  cursor: pointer;
 `;
