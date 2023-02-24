@@ -19,10 +19,10 @@ function Layout({ children }: LayoutProps) {
           <Title>HAUS</Title>
         </Link>
         {data && data.user ? (
-          <div>
+          <UserName>
             <p>{data.user.name}</p>
             <p onClick={() => signOut()}>logout</p>
-          </div>
+          </UserName>
         ) : (
           <Link href='/login'>
             <p>login</p>
@@ -52,4 +52,10 @@ const Header = styled.div`
 const Title = styled.p`
   font-size: 48px;
   cursor: pointer;
+`;
+
+const UserName = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
