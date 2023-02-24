@@ -1,23 +1,43 @@
 import React from 'react';
 import styled from 'styled-components';
+import Link from 'next/link';
+
+import usePagination from 'hooks/usePagination';
+
 import { VscChevronLeft, VscChevronRight } from 'react-icons/vsc';
 
-const Pagination = () => {
+type PaginationProps = {
+  page: string;
+  totalCount: number;
+};
+
+const Pagination = ({ page, totalCount }: PaginationProps) => {
+  const { currentPageGroup, prevPageGroup, nextPageGroup, isFirst, isLast } = usePagination(
+    page,
+    totalCount
+  );
+
   return (
     <Container>
-      <Button disabled>
-        <VscChevronLeft />
-      </Button>
+      <Link href={`/?page=${prevPageGroup}`}>
+        <Button disabled={isFirst}>
+          <VscChevronLeft />
+        </Button>
+      </Link>
       <PageWrapper>
-        {[1, 2, 3, 4, 5].map((page) => (
-          <Page key={page} selected={page === 1} disabled={page === 1}>
-            {page}
-          </Page>
+        {currentPageGroup.map((pageNumber) => (
+          <Link key={pageNumber} href={`/?page=${pageNumber}`}>
+            <Page selected={pageNumber === +page} disabled={pageNumber === +page}>
+              {pageNumber}
+            </Page>
+          </Link>
         ))}
       </PageWrapper>
-      <Button disabled={false}>
-        <VscChevronRight />
-      </Button>
+      <Link href={`/?page=${nextPageGroup}`}>
+        <Button disabled={isLast}>
+          <VscChevronRight />
+        </Button>
+      </Link>
     </Container>
   );
 };
@@ -32,6 +52,10 @@ const Container = styled.div`
   width: 400px;
   margin-top: 40px;
   margin-left: -20px;
+
+  button {
+    cursor: pointer;
+  }
 `;
 
 const Button = styled.button`
@@ -46,11 +70,7 @@ const PageWrapper = styled.div`
   margin: 0 16px;
 `;
 
-type PageType = {
-  selected: boolean;
-};
-
-const Page = styled.button<PageType>`
+const Page = styled.button<{ selected: boolean }>`
   padding: 4px 6px;
   background-color: ${({ selected }) => (selected ? '#000' : 'transparent')};
   color: ${({ selected }) => (selected ? '#fff' : '#000')};
