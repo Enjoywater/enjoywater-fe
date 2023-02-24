@@ -1,23 +1,24 @@
-import Link from 'next/link';
-import type { NextPage } from 'next';
 import React from 'react';
 import styled from 'styled-components';
+import { dehydrate, QueryClient } from 'react-query';
+import { useRouter } from 'next/router';
 
-import products from '../../api/data/products.json';
+import {
+  fetchProductDetail,
+  useGetProductDetailQuery,
+} from 'libs/queries/ProductDetail/useGetProductDetailQuery';
+import type { GetServerSideProps, NextPage } from 'next';
 
 const ProductDetailPage: NextPage = () => {
-  const product = products[0];
+  const router = useRouter();
+  const { id } = router.query;
+
+  const { data: product } = useGetProductDetailQuery(id as string);
+
+  if (!product) return <div />;
 
   return (
     <>
-      <Header>
-        <Link href='/'>
-          <Title>HAUS</Title>
-        </Link>
-        <Link href='/login'>
-          <p>login</p>
-        </Link>
-      </Header>
       <Thumbnail src={product.thumbnail ? product.thumbnail : '/defaultThumbnail.jpg'} />
       <ProductInfoWrapper>
         <Name>{product.name}</Name>
@@ -27,18 +28,20 @@ const ProductDetailPage: NextPage = () => {
   );
 };
 
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { id } = context.query;
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery(['productDetail', id], () => fetchProductDetail(id as string));
+
+  return {
+    props: {
+      dehydratedProps: dehydrate(queryClient),
+    },
+  };
+};
+
 export default ProductDetailPage;
-
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px;
-`;
-
-const Title = styled.a`
-  font-size: 48px;
-`;
 
 const Thumbnail = styled.img`
   width: 100%;
