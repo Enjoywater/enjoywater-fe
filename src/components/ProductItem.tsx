@@ -1,33 +1,42 @@
 import Image from 'next/image';
-import { useRouter } from 'next/router';
+import Link from 'next/link';
 import styled from 'styled-components';
 
-import { Product } from '../types/product';
+import { Product } from 'types/product';
 
 type ProductItemProps = {
   product: Product;
 };
 
 const ProductItem = ({ product: { id, name, thumbnail, price } }: ProductItemProps) => {
-  const { push } = useRouter();
-
   return (
-    <Container onClick={() => push(`/products/${id}`)}>
-      <Thumbnail>
-        <Image alt='product' layout='fill' src={thumbnail ? thumbnail : '/defaultThumbnail.jpg'} />
-      </Thumbnail>
-      <Name>{name}</Name>
-      <Price>{price.toLocaleString()}</Price>
-    </Container>
+    <Link href={`/products/${id}`}>
+      <Container>
+        <Thumbnail>
+          <Image
+            alt='product'
+            layout='fill'
+            src={thumbnail ? thumbnail : '/defaultThumbnail.jpg'}
+          />
+        </Thumbnail>
+        <Name>
+          <p>{name}</p>
+        </Name>
+        <Price>
+          <p>{price.toLocaleString()}</p>
+        </Price>
+      </Container>
+    </Link>
   );
 };
 
 export default ProductItem;
 
-const Container = styled.a`
+const Container = styled.div`
   width: 180px;
   margin-left: 20px;
   margin-top: 20px;
+  cursor: pointer;
 `;
 
 const Thumbnail = styled.div`
@@ -39,9 +48,12 @@ const Thumbnail = styled.div`
 
 const Name = styled.div`
   margin-top: 8px;
-  font-size: 16px;
+
+  p {
+    font-size: 16px;
+  }
 `;
 
-const Price = styled.div`
+const Price = styled(Name)`
   margin-top: 4px;
 `;
