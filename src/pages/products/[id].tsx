@@ -12,16 +12,18 @@ import type { GetServerSideProps, NextPage } from 'next';
 type ProductDetailProps = { id: string };
 
 const ProductDetailPage: NextPage<ProductDetailProps> = ({ id }: ProductDetailProps) => {
-  const { data: product } = useGetProductDetailQuery(id);
+  const { data: product, isSuccess } = useGetProductDetailQuery(id);
 
-  if (!product) return <div />;
+  if (!isSuccess) return <div />;
+
+  const { thumbnail, name, price } = product;
   return (
     <>
-      <Thumbnail src={product.thumbnail ? product.thumbnail : '/defaultThumbnail.jpg'} />
+      <Thumbnail src={thumbnail || '/defaultThumbnail.jpg'} />
       <ProductInfoWrapper>
-        <Name>{product.name}</Name>
+        <Name>{name}</Name>
         <Price>
-          <p>{product.price.toLocaleString()}원</p>
+          <p>{price.toLocaleString()}원</p>
         </Price>
       </ProductInfoWrapper>
     </>

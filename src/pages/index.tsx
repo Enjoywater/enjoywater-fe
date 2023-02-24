@@ -15,14 +15,16 @@ import type { GetServerSideProps, NextPage } from 'next';
 type HomePageProps = { page: string };
 
 const HomePage: NextPage<HomePageProps> = ({ page }: HomePageProps) => {
-  const { data: productList } = useGetProductListQuery(page);
+  const { data: productList, isSuccess } = useGetProductListQuery(page);
 
-  if (!productList) return <div />;
+  if (!isSuccess) return <div />;
+
+  const { products, totalCount } = productList;
   return (
     <>
       <Container>
-        <ProductList products={productList.products} />
-        <Pagination page={page} totalCount={productList.totalCount} />
+        <ProductList products={products} />
+        <Pagination page={page} totalCount={totalCount} />
       </Container>
     </>
   );
