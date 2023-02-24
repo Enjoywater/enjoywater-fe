@@ -37,12 +37,13 @@ const ProductDetailPage: NextPage<ProductDetailProps> = ({ id }: ProductDetailPr
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { id } = context.query;
   const queryClient = new QueryClient();
+  const idValue = typeof id === 'string' ? id : '0';
 
-  await queryClient.prefetchQuery(['productDetail', id], () => fetchProductDetail(id as string));
+  await queryClient.prefetchQuery(['productDetail', idValue], () => fetchProductDetail(idValue));
 
   return {
     props: {
-      id,
+      id: idValue,
       dehydratedProps: dehydrate(queryClient),
     },
   };
