@@ -1,6 +1,8 @@
 import { useQuery } from 'react-query';
 
+import { useRouter } from 'next/router';
 import axiosClient from 'libs/axios/axios';
+
 import { ProductList } from 'types/product';
 
 export const fetchProductList = async (page: string) => {
@@ -9,7 +11,15 @@ export const fetchProductList = async (page: string) => {
   return data.data;
 };
 
-export const useGetProductListQuery = (page: string) =>
-  useQuery<ProductList>(['productList', page], () => fetchProductList(page), {
+export const useGetProductListQuery = (page: string) => {
+  const { push } = useRouter();
+
+  return useQuery<ProductList>(['productList', page], () => fetchProductList(page), {
     keepPreviousData: true,
+    retry(failureCount) {
+      if (!failureCount) push('/404');
+
+      return true;
+    },
   });
+};
