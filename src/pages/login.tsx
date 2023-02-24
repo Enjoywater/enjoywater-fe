@@ -2,9 +2,9 @@ import React, { useEffect, useMemo, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { useRouter } from 'next/router';
 
-import { signIn } from 'next-auth/react';
+import { getSession, signIn } from 'next-auth/react';
 import { checkUserId, checkPassword } from 'utilities';
-import type { NextPage } from 'next';
+import type { GetServerSideProps, NextPage } from 'next';
 
 const LoginPage: NextPage = () => {
   const router = useRouter();
@@ -98,6 +98,24 @@ const LoginPage: NextPage = () => {
     </Form>
   );
 };
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getSession(context);
+
+  if (session && session.user) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {},
+  };
+};
+
 export default LoginPage;
 
 const Form = styled.div`
