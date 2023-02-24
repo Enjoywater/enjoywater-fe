@@ -15,6 +15,7 @@ const ProductItem = ({ product: { id, name, thumbnail, price } }: ProductItemPro
       <Container>
         <Thumbnail>
           <Image
+            priority
             alt='product'
             layout='fill'
             src={thumbnail ? thumbnail : '/defaultThumbnail.jpg'}
