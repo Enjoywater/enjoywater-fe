@@ -22,14 +22,18 @@ export const checkPassword = (password: string) => {
   return passwordCheck.test(password);
 };
 
-export const formatPageArray = (totalCount: number) => {
+export const formatPageArray = (
+  totalCount: number,
+  pageGroupCount: number,
+  productCount: number = 10
+) => {
   const pageNumbers = [];
-  const totalPage = Math.ceil(totalCount / 10);
+  const totalPage = Math.ceil(totalCount / productCount);
 
-  for (let i = 1; i <= totalPage; i += 5) {
+  for (let i = 1; i <= totalPage; i += pageGroupCount) {
     const pageGroup = [];
 
-    for (let j = i; j < i + 5 && j <= totalPage; j++) {
+    for (let j = i; j < i + pageGroupCount && j <= totalPage; j++) {
       pageGroup.push(j);
     }
 
