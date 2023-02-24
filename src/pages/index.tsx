@@ -33,12 +33,13 @@ const HomePage: NextPage<HomePageProps> = ({ page }: HomePageProps) => {
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { page } = context.query;
   const queryClient = new QueryClient();
+  const pageValue = typeof page === 'string' ? page : '1';
 
-  await queryClient.prefetchQuery(['productList', page], () => fetchProductList(page as string));
+  await queryClient.prefetchQuery(['productList', pageValue], () => fetchProductList(pageValue));
 
   return {
     props: {
-      page: page || '1',
+      page: pageValue,
       dehydratedProps: dehydrate(queryClient),
     },
   };
