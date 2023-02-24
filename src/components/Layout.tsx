@@ -45,4 +45,5 @@ const Header = styled.div`
 
 const Title = styled.p`
   font-size: 48px;
+  cursor: pointer;
 `;
