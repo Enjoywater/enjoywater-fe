@@ -20,7 +20,9 @@ const ProductDetailPage: NextPage<ProductDetailProps> = ({ id }: ProductDetailPr
       <Thumbnail src={product.thumbnail ? product.thumbnail : '/defaultThumbnail.jpg'} />
       <ProductInfoWrapper>
         <Name>{product.name}</Name>
-        <Price>{product.price}원</Price>
+        <Price>
+          <p>{product.price.toLocaleString()}원</p>
+        </Price>
       </ProductInfoWrapper>
     </>
   );
@@ -52,12 +54,15 @@ const ProductInfoWrapper = styled.div`
   padding: 0 20px;
 `;
 
-const Name = styled.div`
+const Name = styled.p`
   font-size: 20px;
   font-weight: bold;
 `;
 
 const Price = styled.div`
-  font-size: 18px;
   margin-top: 8px;
+
+  p {
+    font-size: 18px;
+  }
 `;
