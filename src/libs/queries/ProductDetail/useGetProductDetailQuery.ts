@@ -1,5 +1,4 @@
 import { useQuery } from 'react-query';
-
 import { useRouter } from 'next/router';
 import axiosClient from 'libs/axios/axios';
 

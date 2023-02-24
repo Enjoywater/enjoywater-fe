@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import type { AppProps } from 'next/app';
 import styled from 'styled-components';
 import { SessionProvider } from 'next-auth/react';
 import { Hydrate, QueryClient, QueryClientProvider } from 'react-query';
@@ -8,6 +7,8 @@ import Layout from 'components/Layout';
 import GlobalStyle from 'styles/GlobalStyle';
 
 import setupMSW from 'api/setup';
+
+import type { AppProps } from 'next/app';
 
 setupMSW();
 

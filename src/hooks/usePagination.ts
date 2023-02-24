@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+
 import { formatPageArray } from 'utilities';
 
 const usePagination = (page: string, totalCount: number, pageGroupCount: number = 5) => {

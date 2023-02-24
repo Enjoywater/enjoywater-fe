@@ -2,6 +2,7 @@ import NextAuth, { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
 import axiosClient from 'libs/axios/axios';
+
 import { LoginType } from 'types/user';
 
 export const authOptions: NextAuthOptions = {
@@ -13,8 +14,9 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
 
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         if (!credentials) return null;
+
         const { id, password } = credentials;
         const loginRes = await axiosClient.post<LoginType>('/login', {
           id,
