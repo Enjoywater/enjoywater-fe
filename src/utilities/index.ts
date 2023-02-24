@@ -18,7 +18,7 @@ export const checkUserId = (id: string) => {
 };
 
 export const checkPassword = (password: string) => {
-  const passwordCheck = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,30}/;
+  const passwordCheck = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,30}$/;
   return passwordCheck.test(password);
 };
 
