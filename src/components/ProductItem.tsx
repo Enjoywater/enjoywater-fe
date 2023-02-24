@@ -23,7 +23,7 @@ const ProductItem = ({ product: { id, name, thumbnail, price } }: ProductItemPro
           <p>{name}</p>
         </Name>
         <Price>
-          <p>{price.toLocaleString()}</p>
+          <p>{price.toLocaleString()}원</p>
         </Price>
       </Container>
     </Link>
