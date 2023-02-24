@@ -41,9 +41,14 @@ const Header = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 20px;
+
+  p {
+    :last-child {
+      cursor: pointer;
+    }
+  }
 `;
 
 const Title = styled.p`
   font-size: 48px;
-  cursor: pointer;
 `;
