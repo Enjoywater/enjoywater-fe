@@ -1,22 +1,20 @@
 import React from 'react';
 import styled from 'styled-components';
 import { dehydrate, QueryClient } from 'react-query';
-import { useRouter } from 'next/router';
 
 import {
   fetchProductDetail,
   useGetProductDetailQuery,
 } from 'libs/queries/ProductDetail/useGetProductDetailQuery';
+
 import type { GetServerSideProps, NextPage } from 'next';
 
-const ProductDetailPage: NextPage = () => {
-  const router = useRouter();
-  const { id } = router.query;
+type ProductDetailProps = { id: string };
 
-  const { data: product } = useGetProductDetailQuery(id as string);
+const ProductDetailPage: NextPage<ProductDetailProps> = ({ id }: ProductDetailProps) => {
+  const { data: product } = useGetProductDetailQuery(id);
 
   if (!product) return <div />;
-
   return (
     <>
       <Thumbnail src={product.thumbnail ? product.thumbnail : '/defaultThumbnail.jpg'} />
@@ -36,6 +34,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   return {
     props: {
+      id,
       dehydratedProps: dehydrate(queryClient),
     },
   };
