@@ -1,24 +1,45 @@
-import { useRouter } from 'next/router';
-import type { NextPage } from 'next';
 import React from 'react';
 import styled from 'styled-components';
+import { dehydrate, QueryClient } from 'react-query';
 
-import products from 'api/data/products.json';
 import ProductList from 'components/ProductList';
 import Pagination from 'components/Pagination';
 
-const HomePage: NextPage = () => {
-  const router = useRouter();
-  const { page } = router.query;
+import {
+  fetchProductList,
+  useGetProductListQuery,
+} from 'libs/queries/ProductList/useGetProductListQuery';
 
+import type { GetServerSideProps, NextPage } from 'next';
+
+type HomePageProps = { page: string };
+
+const HomePage: NextPage<HomePageProps> = ({ page }: HomePageProps) => {
+  const { data: productList } = useGetProductListQuery(page);
+
+  if (!productList) return <div />;
   return (
     <>
       <Container>
-        <ProductList products={products.slice(0, 10)} />
-        <Pagination />
+        <ProductList products={productList.products} />
+        <Pagination page={page} totalCount={productList.totalCount} />
       </Container>
     </>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { page } = context.query;
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery(['productList', page], () => fetchProductList(page as string));
+
+  return {
+    props: {
+      page: page || '1',
+      dehydratedProps: dehydrate(queryClient),
+    },
+  };
 };
 
 export default HomePage;
