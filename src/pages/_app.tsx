@@ -1,20 +1,34 @@
-import type { AppProps } from 'next/app';
+import { useState } from 'react';
 import styled from 'styled-components';
+import { SessionProvider } from 'next-auth/react';
+import { Hydrate, QueryClient, QueryClientProvider } from 'react-query';
 
-import setupMSW from '../api/setup';
-import GlobalStyle from '../styles/GlobalStyle';
+import Layout from 'components/Layout';
+import GlobalStyle from 'styles/GlobalStyle';
+
+import setupMSW from 'api/setup';
+
+import type { AppProps } from 'next/app';
 
 setupMSW();
 
 function MyApp({ Component, pageProps }: AppProps) {
+  const [queryClient] = useState(() => new QueryClient());
+
   return (
-    <>
-      <GlobalStyle />
-      <Background />
-      <Content>
-        <Component {...pageProps} />
-      </Content>
-    </>
+    <QueryClientProvider client={queryClient}>
+      <Hydrate state={pageProps.dehydratedProps}>
+        <SessionProvider session={pageProps.session}>
+          <GlobalStyle />
+          <Background />
+          <Content>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </Content>
+        </SessionProvider>
+      </Hydrate>
+    </QueryClientProvider>
   );
 }
 
