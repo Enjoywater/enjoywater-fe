@@ -11,12 +11,12 @@ export const fetchProductList = async (page: string) => {
 };
 
 export const useGetProductListQuery = (page: string) => {
-  const { push } = useRouter();
+  const { replace } = useRouter();
 
   return useQuery<ProductList>(['productList', page], () => fetchProductList(page), {
     keepPreviousData: true,
     retry(failureCount) {
-      if (!failureCount) push('/404');
+      if (!failureCount) replace('/404');
 
       return true;
     },
