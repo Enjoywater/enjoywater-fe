@@ -1,47 +1,51 @@
-import { useRouter } from 'next/router';
-import Link from 'next/link';
-import type { NextPage } from 'next';
 import React from 'react';
 import styled from 'styled-components';
+import { dehydrate, QueryClient } from 'react-query';
 
-import products from '../api/data/products.json';
-import ProductList from '../components/ProductList';
-import Pagination from '../components/Pagination';
+import ProductList from 'components/ProductList';
+import Pagination from 'components/Pagination';
 
-const HomePage: NextPage = () => {
-  const router = useRouter();
-  const { page } = router.query;
+import {
+  fetchProductList,
+  useGetProductListQuery,
+} from 'libs/queries/ProductList/useGetProductListQuery';
 
+import type { GetServerSideProps, NextPage } from 'next';
+
+type HomePageProps = { page: string };
+
+const HomePage: NextPage<HomePageProps> = ({ page }: HomePageProps) => {
+  const { data: productList, isSuccess } = useGetProductListQuery(page);
+
+  if (!isSuccess) return <div />;
+
+  const { products, totalCount } = productList;
   return (
     <>
-      <Header>
-        <Link href='/'>
-          <Title>HAUS</Title>
-        </Link>
-        <Link href='/login'>
-          <p>login</p>
-        </Link>
-      </Header>
       <Container>
-        <ProductList products={products.slice(0, 10)} />
-        <Pagination />
+        <ProductList products={products} />
+        <Pagination page={page} totalCount={totalCount} />
       </Container>
     </>
   );
 };
 
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { page } = context.query;
+  const queryClient = new QueryClient();
+  const pageValue = typeof page === 'string' ? page : '1';
+
+  await queryClient.prefetchQuery(['productList', pageValue], () => fetchProductList(pageValue));
+
+  return {
+    props: {
+      page: pageValue,
+      dehydratedProps: dehydrate(queryClient),
+    },
+  };
+};
+
 export default HomePage;
-
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px;
-`;
-
-const Title = styled.a`
-  font-size: 48px;
-`;
 
 const Container = styled.div`
   display: flex;

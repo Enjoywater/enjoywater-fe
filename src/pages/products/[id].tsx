@@ -1,46 +1,58 @@
-import Link from 'next/link';
-import type { NextPage } from 'next';
 import React from 'react';
 import styled from 'styled-components';
+import { dehydrate, QueryClient } from 'react-query';
 
-import products from '../../api/data/products.json';
+import Image from 'next/image';
 
-const ProductDetailPage: NextPage = () => {
-  const product = products[0];
+import {
+  fetchProductDetail,
+  useGetProductDetailQuery,
+} from 'libs/queries/ProductDetail/useGetProductDetailQuery';
 
+import type { GetServerSideProps, NextPage } from 'next';
+
+type ProductDetailProps = { id: string };
+
+const ProductDetailPage: NextPage<ProductDetailProps> = ({ id }: ProductDetailProps) => {
+  const { data: product, isSuccess } = useGetProductDetailQuery(id);
+
+  if (!isSuccess) return <div />;
+
+  const { thumbnail, name, price } = product;
   return (
     <>
-      <Header>
-        <Link href='/'>
-          <Title>HAUS</Title>
-        </Link>
-        <Link href='/login'>
-          <p>login</p>
-        </Link>
-      </Header>
-      <Thumbnail src={product.thumbnail ? product.thumbnail : '/defaultThumbnail.jpg'} />
+      <Thumbnail>
+        <Image alt='product' layout='fill' src={thumbnail || '/defaultThumbnail.jpg'} />
+      </Thumbnail>
       <ProductInfoWrapper>
-        <Name>{product.name}</Name>
-        <Price>{product.price}원</Price>
+        <Name>{name}</Name>
+        <Price>
+          <p>{price.toLocaleString()}원</p>
+        </Price>
       </ProductInfoWrapper>
     </>
   );
 };
 
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { id } = context.query;
+  const queryClient = new QueryClient();
+  const idValue = typeof id === 'string' ? id : '0';
+
+  await queryClient.prefetchQuery(['productDetail', idValue], () => fetchProductDetail(idValue));
+
+  return {
+    props: {
+      id: idValue,
+      dehydratedProps: dehydrate(queryClient),
+    },
+  };
+};
+
 export default ProductDetailPage;
 
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px;
-`;
-
-const Title = styled.a`
-  font-size: 48px;
-`;
-
-const Thumbnail = styled.img`
+const Thumbnail = styled.div`
+  position: relative;
   width: 100%;
   height: 420px;
 `;
@@ -50,12 +62,15 @@ const ProductInfoWrapper = styled.div`
   padding: 0 20px;
 `;
 
-const Name = styled.div`
+const Name = styled.p`
   font-size: 20px;
   font-weight: bold;
 `;
 
 const Price = styled.div`
-  font-size: 18px;
   margin-top: 8px;
+
+  p {
+    font-size: 18px;
+  }
 `;
